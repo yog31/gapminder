@@ -1,0 +1,88 @@
+---
+title: "Gapminder Analysis"
+author: ""
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    code_folding: show
+    highlight: default
+    keep_md: yes
+    theme: journal
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+      toc_depth: 3
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE, 
+                      echo = TRUE, 
+                      cache = FALSE,
+                      include = TRUE,
+                      warning = FALSE,
+                      collapse = FALSE,
+                      message = FALSE,
+                      engine = "R", # Chunks will always have R code, unless noted
+                      error = TRUE,
+                      fig.path="./figures/")  # Set the figure options
+```
+
+
+
+
+# Preparation
+
+## Load packages
+
+```{r load-packages}
+library(tidyverse)
+
+```
+
+
+## Load Data
+
+We will load the gapminder data. This data has 
+```{r load-data}
+gapminder <- read.csv("data/gapminder_data.csv")
+```
+
+# Analysis
+
+## How many countries?
+```{r stat-countries}
+num_countries <- length(unique(gapminder$country))
+num_countries
+```
+
+There are `r num_countries` **countries** in the dataset. 
+
+## How many continents?
+```{r stat-continents}
+num_continents <- length(unique(gapminder$continent))
+num_continents
+```
+
+There are `r num_continents` **continents** in the dataset. 
+
+
+# Plot Data
+```{r plot-data}
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp)) +
+  geom_point() + scale_x_log10() + geom_smooth(method="lm", size=1.5)
+```
+
+
+
+```{r plot-AZ-countries}
+gapminder %>%
+  # Filter countries that start with "A" or "Z"
+  filter(substr(country, start = 1, stop = 1) %in% c("A", "Z")) %>%
+  # Make the plot
+  ggplot(aes(x = year, y = lifeExp, color = continent)) +
+  geom_line() +
+  facet_wrap( ~ country)
+```
